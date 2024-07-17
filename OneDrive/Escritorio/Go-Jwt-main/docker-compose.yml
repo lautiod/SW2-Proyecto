@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  database:
+    build: ./database
+    environment:
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: users
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
+      timeout: 20s
+      retries: 10
+  frontend:
+    build: ./frontend
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "5173:5173"
+  backend:
+    build: ./backend
+    restart: on-failure
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "8080:8080"

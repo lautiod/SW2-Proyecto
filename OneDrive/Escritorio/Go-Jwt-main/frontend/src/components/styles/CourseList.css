@@ -1,0 +1,67 @@
+.course-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Media query para ajustar el número de columnas en pantallas más pequeñas */
+@media (max-width: 768px) {
+    .course-list {
+        justify-content: space-around;
+    }
+}
+
+/* Estilo para Course */
+.course-card {
+    width: 300px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.course-content {
+    text-align: left;
+    padding: 10px;
+}
+
+.course-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.course-content p {
+    font-size: 1rem;
+    color: #666666;
+    margin-bottom: 10px;
+}
+
+.info-button, .enroll-button {
+    padding: 8px 16px;
+    margin-right: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #1a75ff;
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+}
+
+.info-button:hover, .enroll-button:hover {
+    background-color: #0056b3;
+}
+
+.enroll-button {
+    background-color: #5bb114;
+}
+
+.enroll-button:hover {
+    background-color: #3d871e;
+}

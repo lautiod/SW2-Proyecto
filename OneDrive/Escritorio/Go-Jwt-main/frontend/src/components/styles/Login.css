@@ -1,0 +1,64 @@
+/* Estilos para Login.jsx */
+.login-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="email"],
+input[type="password"] {
+    padding: 8px;
+    width: calc(100% - 16px);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-button,
+.signup-button {
+    background-color: #1a75ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px; /* Ajustar el padding para hacer los botones más pequeños */
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-button:hover,
+.signup-button:hover {
+    background-color: #0056b3;
+}
+
+.signup-button {
+    background-color: #5bb114;
+}
+
+.signup-button:hover {
+    background-color: #4a901c;
+}

@@ -1,0 +1,23 @@
+.comment-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-height: 200px; /* Altura máxima de la tarjeta de comentario */
+    overflow-y: auto; /* Habilita el desplazamiento vertical si el contenido excede la altura */
+    margin-right: 20px;
+    background-color: #82d195;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.comment-card h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.comment-card p {
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0;
+    
+}
