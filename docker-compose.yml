@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:5
+    container_name: mongo_proyecto
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - app-network
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbit-proyecto
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Interfaz de administración
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+    networks:
+      - app-network
+  
+  courses-api:
+    image: courses-api:latest
+    container_name: courses-api-container
+    build:
+      context: ./courses-api
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-network
+      
+networks:
+  app-network:
+    driver: bridge
