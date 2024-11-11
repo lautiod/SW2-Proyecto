@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mongo:
     image: mongo:5
-    container_name: mongo_proyecto
+    container_name: mongo-container
     ports:
       - "27017:27017"
     environment:
@@ -14,7 +14,7 @@ services:
   
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbit-proyecto
+    container_name: rabbit-container
     ports:
       - "5672:5672"
       - "15672:15672" # Interfaz de administración
@@ -78,7 +78,17 @@ services:
       - mongo
     networks:
       - app-network
-  
+
+  frontend:
+    image: frontend-api:latest
+    container_name: frontend-container
+    build: ./frontend
+    depends_on:
+      - courses-api
+      - search-api 
+      - inscriptions-api
+    ports:
+      - "5173:5173"
 
       
 networks:
