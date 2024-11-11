@@ -65,6 +65,19 @@ services:
     networks:
       - app-network
   
+  inscriptions-api:
+    image: inscriptions-api:latest
+    container_name: inscriptions-api-container
+    build:
+      context: ./inscriptions-api
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
   
 
       
