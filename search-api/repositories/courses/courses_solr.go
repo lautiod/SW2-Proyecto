@@ -150,7 +150,8 @@ func (searchEngine Solr) Delete(ctx context.Context, id string) error {
 
 func (searchEngine Solr) Search(ctx context.Context, query string, limit int, offset int) ([]courses.Course, error) {
 	// Prepare the Solr query with limit and offset
-	solrQuery := fmt.Sprintf("q=(name:%s)&rows=%d&start=%d", query, limit, offset)
+	// solrQuery := fmt.Sprintf("q=(name:%s)&rows=%d&start=%d", query, limit, offset)
+	solrQuery := fmt.Sprintf("q=(name:%s OR description:%s)&rows=%d&start=%d", query, query, limit, offset)
 
 	// Execute the search request
 	resp, err := searchEngine.Client.Query(ctx, searchEngine.Collection, solr.NewQuery(solrQuery))

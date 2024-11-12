@@ -3,7 +3,9 @@ package courses
 import (
 	"context"
 	coursesDAO "courses-api/dao/courses"
+	inscriptionsDAO "courses-api/dao/inscriptions"
 	coursesDomain "courses-api/domain/courses"
+	inscriptionsDomain "courses-api/domain/inscriptions"
 	"fmt"
 )
 
@@ -12,6 +14,9 @@ type Repository interface {
 	GetCourseByID(ctx context.Context, id string) (coursesDAO.Course, error)
 	CreateCourse(ctx context.Context, course coursesDAO.Course) (string, error)
 	UpdateCourse(ctx context.Context, course coursesDAO.Course) error
+	EnrollUser(ctx context.Context, inscription inscriptionsDAO.Inscription) (string, error)
+	ValidateEnrrol(ctx context.Context, inscription inscriptionsDAO.Inscription) error
+	GetInscriptionsByUserId(ctx context.Context, userID string) ([]inscriptionsDAO.Inscription, error)
 }
 
 type Queue interface {
@@ -130,4 +135,62 @@ func (service Service) UpdateCourse(ctx context.Context, course coursesDomain.Co
 	}
 
 	return nil
+}
+
+// ******************************** I N S C R I P T I O N S
+
+func (service Service) EnrollUser(ctx context.Context, inscription inscriptionsDomain.Inscription) (string, error) {
+	// Convert domain model to DAO model
+	record := inscriptionsDAO.Inscription{
+		CourseID: inscription.CourseID,
+		UserID:   inscription.UserID,
+	}
+
+	err := service.mainRepository.ValidateEnrrol(ctx, record)
+	if err == nil {
+		return "", fmt.Errorf("error user is already enrolled in the course")
+	}
+
+	id, err := service.mainRepository.EnrollUser(ctx, record)
+	if err != nil {
+		return "", fmt.Errorf("error creating course in main repository: %w", err)
+	}
+	// Set ID from main repository to use in the rest of the repositories
+	record.ID = id
+
+	return id, nil
+}
+
+func (service Service) GetCoursesByUserID(ctx context.Context, userID string) ([]coursesDomain.Course, error) {
+	// Obtener inscripciones del repositorio
+	inscriptions, err := service.mainRepository.GetInscriptionsByUserId(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting inscriptions from repository: %v", err)
+	}
+
+	var coursesList []coursesDomain.Course
+	for _, inscription := range inscriptions {
+		// Obtener curso por ID usando el CourseID de cada inscripción
+		courseDAO, err := service.mainRepository.GetCourseByID(ctx, inscription.CourseID)
+		if err != nil {
+			return nil, fmt.Errorf("error getting course from repository: %v", err)
+		}
+
+		// Mapear la información del curso desde courseDAO a coursesDomain.Course
+		course := coursesDomain.Course{
+			ID:           courseDAO.ID,
+			Name:         courseDAO.Name,
+			Description:  courseDAO.Description,
+			Professor:    courseDAO.Professor,
+			ImageURL:     courseDAO.ImageURL,
+			Requirement:  courseDAO.Requirement,
+			Duration:     courseDAO.Duration,
+			Availability: courseDAO.Availability,
+		}
+
+		// Agregar el curso a la lista de cursos
+		coursesList = append(coursesList, course)
+	}
+
+	return coursesList, nil
 }

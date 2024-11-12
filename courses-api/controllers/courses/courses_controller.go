@@ -3,6 +3,7 @@ package courses
 import (
 	"context"
 	coursesDomain "courses-api/domain/courses"
+	inscriptionsDomain "courses-api/domain/inscriptions"
 	"fmt"
 	"net/http"
 	"strings"
@@ -15,6 +16,8 @@ type Service interface {
 	GetCourseByID(ctx context.Context, id string) (coursesDomain.Course, error)
 	CreateCourse(ctx context.Context, course coursesDomain.Course) (string, error)
 	UpdateCourse(ctx context.Context, course coursesDomain.Course) error
+	EnrollUser(ctx context.Context, inscription inscriptionsDomain.Inscription) (string, error)
+	GetCoursesByUserID(ctx context.Context, userID string) ([]coursesDomain.Course, error)
 }
 
 type Controller struct {
@@ -108,4 +111,43 @@ func (controller Controller) UpdateCourse(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": id,
 	})
+}
+
+func (controller Controller) EnrollUser(ctx *gin.Context) {
+	// Parse inscription
+	var inscription inscriptionsDomain.Inscription
+	if err := ctx.ShouldBindJSON(&inscription); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": fmt.Sprintf("invalid request: %s", err.Error()),
+		})
+		return
+	}
+
+	// Create hotel
+	id, err := controller.service.EnrollUser(ctx.Request.Context(), inscription)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("error enrrolling user: %s", err.Error()),
+		})
+		return
+	}
+
+	// Send ID
+	ctx.JSON(http.StatusCreated, gin.H{
+		"id": id,
+	})
+}
+
+func (controller Controller) GetCoursesByUserID(ctx *gin.Context) {
+
+	userID := strings.TrimSpace(ctx.Param("id"))
+
+	courses, err := controller.service.GetCoursesByUserID(ctx.Request.Context(), userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": fmt.Sprintf("error getting courses: %s", err.Error()),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, courses)
 }

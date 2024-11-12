@@ -17,12 +17,13 @@ func main() {
 
 	// MongoDB
 	mainRepository := repositories.NewMongo(repositories.MongoConfig{
-		Host:       "mongo", // Colocar 'mongo' para correr con docker
-		Port:       "27017",
-		Username:   "root",
-		Password:   "root",
-		Database:   "courses-api",
-		Collection: "courses",
+		Host:                   "mongo", // Colocar 'mongo' para correr con docker
+		Port:                   "27017",
+		Username:               "root",
+		Password:               "root",
+		Database:               "courses-api",
+		CoursesCollection:      "courses",
+		InscriptionsCollection: "inscriptions",
 	})
 
 	// Rabbit
@@ -35,9 +36,9 @@ func main() {
 	})
 
 	// Services
-	courseService := services.NewService(mainRepository, eventsQueue)
+	service := services.NewService(mainRepository, eventsQueue)
 	// Controllers
-	courseController := controllers.NewController(courseService)
+	controller := controllers.NewController(service)
 
 	// Router
 	router := gin.Default()
@@ -52,10 +53,12 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	router.GET("/courses", courseController.GetCourses)
-	router.GET("/courses/:id", courseController.GetCourseByID)
-	router.POST("/courses", courseController.CreateCourse)
-	router.PUT("/courses/:id", courseController.UpdateCourse)
+	router.GET("/courses", controller.GetCourses)
+	router.GET("/courses/:id", controller.GetCourseByID)
+	router.POST("/courses", controller.CreateCourse)
+	router.PUT("/courses/:id", controller.UpdateCourse)
+	router.POST("/inscriptions/courses", controller.EnrollUser)
+	router.GET("/inscriptions/user/:id", controller.GetCoursesByUserID)
 
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %v", err)
