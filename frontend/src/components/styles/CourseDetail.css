@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.course-detail {
+    font-family: 'Barlow Condensed', sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #e08686;
+}
+
+.course-detail h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.course-detail p {
+    margin-bottom: 10px;
+}
+
+.back-link {
+    text-decoration: none; /* Quitar subrayado del enlace */
+}
+
+.back-button {
+    margin-top: 20px; 
+    display: block; 
+    width: 100%; 
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #1a75ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+
+/* .comentarios{
+    margin-left: 20px;
+}
+
+.addComment-button{
+    margin-top: 10px; 
+    display: block; 
+    width: 100%; 
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #5bb114;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.addComment-button:hover {
+    background-color: #3d871e;
+} */

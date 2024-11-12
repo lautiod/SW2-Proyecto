@@ -1,6 +1,7 @@
 import React from 'react';
 import CourseList from './CourseList.jsx';
 import './styles/Home.css';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     return (
@@ -18,9 +19,9 @@ const Home = () => {
             <hr />
             <div className="courses-section">
                 <h2>Cursos Disponibles</h2>
-                {/* <Link to='/course/search'>
+                <Link to='/courses/search'>
                     <button className="search-button">Buscar Cursos</button>
-                </Link> */}
+                </Link> 
                 {/* {isAdmin ? <Link to='/create'> <button className='createcourse-button'>Crear Curso</button> </Link> : <p></p>} */}
                 
             </div>

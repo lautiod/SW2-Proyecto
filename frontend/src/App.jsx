@@ -1,8 +1,8 @@
 import React from 'react';
 // import Signup from './components/Signup';
-// import CourseDetail from './components/CourseDetail';
+import CourseDetail from './components/CourseDetail';
 // import Login from './components/Login';
-// import CourseSearch from './components/CourseSearch';
+import CourseSearch from './components/CourseSearch';
 // import AddComment from './components/AddComment'
 // import MyCoursesList from './components/MyCoursesList'
 // import AddCourse from './components/AddCourse'
@@ -16,13 +16,13 @@ const App = () => {
             <Routes>
                 <Route path='/' element={<Navigate to="/home"/>} />
                 <Route path='/home' element={<Home />}/>
-                {/* <Route path='/login' element={<Login />}/>
-                <Route path='/signup' element={<Signup />} />
-                <Route path="/course/:courseId" element={<CourseDetail />} />
-                <Route path="/course/search" element={<CourseSearch />} />
-                <Route path="/comment" element={<AddComment />} />
-                <Route path="/mycourses" element={<MyCoursesList />} />
-                <Route path="/create" element={<AddCourse/>} /> */}
+                {/* <Route path='/login' element={<Login />}/> */}
+                {/* <Route path='/signup' element={<Signup />} /> */}
+                <Route path="/courses/:id" element={<CourseDetail />} />
+                <Route path="/courses/search" element={<CourseSearch />} />
+                {/* <Route path="/comment" element={<AddComment />} /> */}
+                {/* <Route path="/mycourses" element={<MyCoursesList />} /> */}
+                {/* <Route path="/create" element={<AddCourse/>} /> */}
             </Routes> 
         </BrowserRouter>
     );
