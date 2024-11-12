@@ -1,9 +1,7 @@
-﻿# SW2-Proyecto
+﻿# PROYECTO: Arq. de Software 2
 
-## Integrantes 
+## Integrantes:
 
-- Reyna Agustín   / 2202124
-
-- Ojeda Dante     / 2218203
-
-- Valdomero Romeo / 2200482
+- Reyna Agustin
+- Ojeda Dante
+- Valdomero Romeo

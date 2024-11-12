@@ -7,7 +7,9 @@ import (
 	services "courses-api/services/courses"
 
 	"log"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,18 +35,27 @@ func main() {
 	})
 
 	// Services
-	service := services.NewService(mainRepository, eventsQueue)
-
+	courseService := services.NewService(mainRepository, eventsQueue)
 	// Controllers
-	controller := controllers.NewController(service)
+	courseController := controllers.NewController(courseService)
 
 	// Router
 	router := gin.Default()
-	router.GET("/courses", controller.GetCourses)
-	router.GET("/courses/:id", controller.GetCourseByID)
-	router.POST("/courses", controller.CreateCourse)
-	router.PUT("/courses/:id", controller.UpdateCourse)
-	//inscr
+
+	// Cors
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	router.GET("/courses", courseController.GetCourses)
+	router.GET("/courses/:id", courseController.GetCourseByID)
+	router.POST("/courses", courseController.CreateCourse)
+	router.PUT("/courses/:id", courseController.UpdateCourse)
 
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %v", err)
