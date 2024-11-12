@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: users-api
+      MYSQL_PASSWORD: root
+    networks:
+      - app-network
+
   mongo:
     image: mongo:5
     container_name: mongo-container
@@ -62,6 +74,21 @@ services:
     depends_on:
       - rabbitmq
       - solr
+    networks:
+      - app-network
+
+  users-api:
+    image: users-api:latest
+    container_name: users-api-container
+    build:
+      context: ./users-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    command: /bin/sh -c "sleep 10 && go run main.go"
+    depends_on:
+      # - memcached
+      - mysql
     networks:
       - app-network
   

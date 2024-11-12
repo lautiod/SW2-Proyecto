@@ -73,16 +73,16 @@ func (repository MySQL) GetByID(id int64) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) GetByUsername(username string) (users.User, error) {
-	var user users.User
-	if err := repository.db.Where("username = ?", username).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return user, fmt.Errorf("user not found")
-		}
-		return user, fmt.Errorf("error fetching user by username: %w", err)
-	}
-	return user, nil
-}
+// func (repository MySQL) GetByUsername(username string) (users.User, error) {
+// 	var user users.User
+// 	if err := repository.db.Where("username = ?", username).First(&user).Error; err != nil {
+// 		if errors.Is(err, gorm.ErrRecordNotFound) {
+// 			return user, fmt.Errorf("user not found")
+// 		}
+// 		return user, fmt.Errorf("error fetching user by username: %w", err)
+// 	}
+// 	return user, nil
+// }
 
 func (repository MySQL) Create(user users.User) (int64, error) {
 	if err := repository.db.Create(&user).Error; err != nil {

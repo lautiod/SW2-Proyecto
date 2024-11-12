@@ -18,7 +18,7 @@ import (
 type Repository interface {
 	GetAll() ([]dao.User, error)
 	GetByID(id int64) (dao.User, error)
-	GetByUsername(username string) (dao.User, error)
+	// GetByUsername(username string) (dao.User, error)
 	Create(user dao.User) (int64, error)
 	Update(user dao.User) error
 	Delete(id int64) error
@@ -55,8 +55,9 @@ func (service Service) GetAll() ([]domain.User, error) {
 	for _, user := range users {
 		result = append(result, domain.User{
 			ID:       user.ID,
-			Username: user.Username,
+			Email:    user.Email,
 			Password: user.Password,
+			IsAdmin:  user.IsAdmin,
 		})
 	}
 
@@ -96,46 +97,47 @@ func (service Service) GetByID(id int64) (domain.User, error) {
 	return service.convertUser(user), nil
 }
 
-func (service Service) GetByUsername(username string) (domain.User, error) {
-	// Check in cache first
-	// user, err := service.cacheRepository.GetByUsername(username)
-	// if err == nil {
-	// 	return service.convertUser(user), nil
-	// }
+// func (service Service) GetByUsername(username string) (domain.User, error) {
+// 	// Check in cache first
+// 	// user, err := service.cacheRepository.GetByUsername(username)
+// 	// if err == nil {
+// 	// 	return service.convertUser(user), nil
+// 	// }
 
-	// // Check memcached
-	// user, err = service.memcachedRepository.GetByUsername(username)
-	// if err == nil {
-	// 	if _, err := service.cacheRepository.Create(user); err != nil {
-	// 		return domain.User{}, fmt.Errorf("error caching user after memcached retrieval: %w", err)
-	// 	}
-	// 	return service.convertUser(user), nil
-	// }
+// 	// // Check memcached
+// 	// user, err = service.memcachedRepository.GetByUsername(username)
+// 	// if err == nil {
+// 	// 	if _, err := service.cacheRepository.Create(user); err != nil {
+// 	// 		return domain.User{}, fmt.Errorf("error caching user after memcached retrieval: %w", err)
+// 	// 	}
+// 	// 	return service.convertUser(user), nil
+// 	// }
 
-	// Check main repository
-	user, err := service.mainRepository.GetByUsername(username)
-	if err != nil {
-		return domain.User{}, fmt.Errorf("error getting user by username: %w", err)
-	}
+// 	// Check main repository
+// 	user, err := service.mainRepository.GetByUsername(username)
+// 	if err != nil {
+// 		return domain.User{}, fmt.Errorf("error getting user by username: %w", err)
+// 	}
 
-	// Save in cache and memcached
-	// if _, err := service.cacheRepository.Create(user); err != nil {
-	// 	return domain.User{}, fmt.Errorf("error caching user after main retrieval: %w", err)
-	// }
-	// if _, err := service.memcachedRepository.Create(user); err != nil {
-	// 	return domain.User{}, fmt.Errorf("error saving user in memcached: %w", err)
-	// }
+// 	// Save in cache and memcached
+// 	// if _, err := service.cacheRepository.Create(user); err != nil {
+// 	// 	return domain.User{}, fmt.Errorf("error caching user after main retrieval: %w", err)
+// 	// }
+// 	// if _, err := service.memcachedRepository.Create(user); err != nil {
+// 	// 	return domain.User{}, fmt.Errorf("error saving user in memcached: %w", err)
+// 	// }
 
-	return service.convertUser(user), nil
-}
+// 	return service.convertUser(user), nil
+// }
 
 func (service Service) Create(user domain.User) (int64, error) {
 	// Hash the password
-	passwordHash := Hash(user.Password)
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 
 	newUser := dao.User{
-		Username: user.Username,
-		Password: passwordHash,
+		Email:    user.Email,
+		Password: string(hash),
+		IsAdmin:  user.IsAdmin,
 	}
 
 	// Create in main repository
@@ -172,7 +174,7 @@ func (service Service) Update(user domain.User) error {
 	// Update in main repository
 	err := service.mainRepository.Update(dao.User{
 		ID:       user.ID,
-		Username: user.Username,
+		Email:    user.Email,
 		Password: passwordHash,
 	})
 	if err != nil {
@@ -287,7 +289,8 @@ func Hash(input string) string {
 func (service Service) convertUser(user dao.User) domain.User {
 	return domain.User{
 		ID:       user.ID,
-		Username: user.Username,
+		Email:    user.Email,
 		Password: user.Password,
+		IsAdmin:  user.IsAdmin,
 	}
 }
