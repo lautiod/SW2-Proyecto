@@ -44,6 +44,7 @@ func main() {
 	router.GET("/courses/:id", controller.GetCourseByID)
 	router.POST("/courses", controller.CreateCourse)
 	router.PUT("/courses/:id", controller.UpdateCourse)
+	//inscr
 
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %v", err)
