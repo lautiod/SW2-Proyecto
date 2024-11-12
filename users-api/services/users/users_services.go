@@ -133,6 +133,9 @@ func (service Service) GetByID(id int64) (domain.User, error) {
 func (service Service) Create(user domain.User) (int64, error) {
 	// Hash the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	if err != nil {
+		return 0, fmt.Errorf("error hashing password: %w", err)
+	}
 
 	newUser := dao.User{
 		Email:    user.Email,
@@ -247,26 +250,61 @@ func (service Service) Delete(id int64) error {
 // }
 // func (service Service) Login(username string, password string) (domain.LoginResponse, error) {
 // Hash the password
-func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, string, error) {
+// func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, string, error) {
 
+// 	user, err := repositories.MySQLInstance.SelectUserByEmail(body.Email)
+// 	if err != nil {
+// 		return domain.LoginResponse{}, "", err
+// 	}
+// 	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+
+// 	if string(hash) != string([]byte(user.Password)) {
+// 		return domain.LoginResponse{}, "", fmt.Errorf("invalid email or password, db: %v enviada: %v error: %v", string([]byte(user.Password)), string(hash), err)
+// 	}
+// 	// err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+
+// 	// if err != nil {
+// 	// 	return domain.LoginResponse{}, "", fmt.Errorf("invalid email or password, db: %v enviada: %v error: %v", string([]byte(user.Password)), string([]byte(body.Password)), err)
+// 	// 	// fmt.Errorf("error getting course from repository: %v", err)
+// 	// }
+
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+// 		"sub": user.ID,
+// 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+// 	})
+
+// 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+
+// 	if err != nil {
+// 		return domain.LoginResponse{}, "", errors.New("failed to create token")
+// 	}
+
+// 	userDomain := domain.LoginResponse{
+// 		IsAdmin: user.IsAdmin,
+// 		Email:   user.Email,
+// 	}
+
+//		return userDomain, tokenString, nil
+//	}
+func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, string, error) {
 	user, err := repositories.MySQLInstance.SelectUserByEmail(body.Email)
 	if err != nil {
 		return domain.LoginResponse{}, "", err
 	}
 
+	// Verificar la contraseña usando bcrypt.CompareHashAndPassword
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
-
 	if err != nil {
-		return domain.LoginResponse{}, "", errors.New("invalid email or password")
+		return domain.LoginResponse{}, "", fmt.Errorf("invalid email or password")
 	}
 
+	// Generar el token JWT
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
-
 	if err != nil {
 		return domain.LoginResponse{}, "", errors.New("failed to create token")
 	}
