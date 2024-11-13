@@ -58,6 +58,8 @@ func main() {
 	router.PUT("/courses/:id", controller.UpdateCourse)
 	router.POST("/inscriptions/courses/:id", controller.EnrollUser)
 	router.GET("/inscriptions/user/:id", controller.GetCoursesByUserID)
+	// Diponibilidad c/ Concurrencia
+	router.GET("/courses/disponibility", controller.GetCoursesDisponibility)
 
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %v", err)

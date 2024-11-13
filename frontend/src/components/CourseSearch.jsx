@@ -56,6 +56,8 @@ const CourseSearch = () => {
                 />
                 <button type="submit" className="search-button">Buscar</button>
             </form>
+            <p id="Disponibilidad"> Cursos con Disponibilidad: </p>
+            <hr />
             {error && <p className="error-message">{error}</p>}
             {(!coursesResult || coursesResult.length === 0) && searchOnce && !error && (
                 <p className="no-results">No se han encontrado resultados.</p>

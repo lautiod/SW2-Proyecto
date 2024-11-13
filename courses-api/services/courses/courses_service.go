@@ -7,6 +7,7 @@ import (
 	coursesDomain "courses-api/domain/courses"
 	inscriptionsDomain "courses-api/domain/inscriptions"
 	"fmt"
+	"sync"
 )
 
 type Repository interface {
@@ -135,6 +136,37 @@ func (service Service) UpdateCourse(ctx context.Context, course coursesDomain.Co
 	}
 
 	return nil
+}
+
+func (service Service) GetCoursesDisponibility(ctx context.Context) ([]string, error) {
+	// Obtener todos los cursos
+	allCourses, err := service.mainRepository.GetCourses(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error getting courses from repository: %v", err)
+	}
+
+	coursesChannel := make(chan string, len(allCourses))
+
+	var wg sync.WaitGroup
+	for _, course := range allCourses {
+		wg.Add(1)
+		go func(course coursesDAO.Course) {
+			defer wg.Done()
+			if course.Availability > 0 {
+				coursesChannel <- course.ID // Enviar el curso al canal
+			}
+		}(course)
+	}
+	wg.Wait()
+
+	close(coursesChannel)
+
+	var courses []string
+	for course := range coursesChannel {
+		courses = append(courses, course)
+	}
+
+	return courses, nil
 }
 
 // ******************************** I N S C R I P T I O N S

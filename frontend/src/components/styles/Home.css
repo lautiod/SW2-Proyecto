@@ -25,21 +25,19 @@ header {
     margin: 0;
 }
 
-#infoUser {
-    font-size: 1.2rem;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 8px;
-}
-
 .admin {
-    background-color: #FFD700;
-    color: #333;
+    background-color: #e0e0e0;  /* color de fondo para admin */
+    color: #333;  /* color de texto para admin */
 }
 
 .alumno {
-    background-color: #ADD8E6;
-    color: #333;
+    background-color: #f4f4f4;  /* color de fondo para alumno */
+    color: #666;  /* color de texto para alumno */
+}
+
+#infoUser {
+    padding: 10px;
+    border: 1px solid #ccc;
 }
 
 .mycourses-button, .search-button, .createcourse-button {

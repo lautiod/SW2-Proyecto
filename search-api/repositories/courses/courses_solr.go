@@ -150,7 +150,6 @@ func (searchEngine Solr) Delete(ctx context.Context, id string) error {
 
 func (searchEngine Solr) Search(ctx context.Context, query string, limit int, offset int) ([]courses.Course, error) {
 	// Prepare the Solr query with limit and offset
-	// solrQuery := fmt.Sprintf("q=(name:%s)&rows=%d&start=%d", query, limit, offset)
 	solrQuery := fmt.Sprintf("q=(name:%s OR description:%s)&rows=%d&start=%d", query, query, limit, offset)
 
 	// Execute the search request
@@ -165,7 +164,6 @@ func (searchEngine Solr) Search(ctx context.Context, query string, limit int, of
 	// Parse the response and extract course documents
 	var coursesList []courses.Course
 	for _, doc := range resp.Response.Documents {
-
 		// Safely extract course fields with type assertions
 		course := courses.Course{
 			ID:           getStringField(doc, "id"),
@@ -177,7 +175,11 @@ func (searchEngine Solr) Search(ctx context.Context, query string, limit int, of
 			Requirement:  getStringField(doc, "requirement"),
 			Availability: getFloatField(doc, "availability"),
 		}
-		coursesList = append(coursesList, course)
+
+		// Only add the course to the list if availability > 0
+		if course.Availability > 0 {
+			coursesList = append(coursesList, course)
+		}
 	}
 
 	return coursesList, nil
