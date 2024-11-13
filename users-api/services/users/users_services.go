@@ -226,9 +226,11 @@ func (service Service) Delete(id int64) error {
 
 // func (service Service) Login(username string, password string) (domain.LoginResponse, error) {
 // Hash the password
+
 func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, string, error) {
 	// Try to get user from cache repository first
 	user, err := service.cacheRepository.GetByEmail(body.Email)
+
 	if err != nil {
 		// If not found in cache, log and try to get user from memcached repository
 		log.Printf("Cache miss for email %s, trying memcached repository", body.Email)
@@ -264,12 +266,12 @@ func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, s
 	}
 
 	// Password comparison
+	// Verificar la contraseña usando bcrypt.CompareHashAndPassword
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 	if err != nil {
-		return domain.LoginResponse{}, "", errors.New("invalid email or password")
+		return domain.LoginResponse{}, "", fmt.Errorf("invalid email or password")
 	}
 
-	// Token creation
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
