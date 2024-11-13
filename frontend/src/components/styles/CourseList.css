@@ -20,7 +20,7 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #d38282;
+    background-color: #ffffff;
     display: inline-block;
     vertical-align: top;
 }
@@ -41,7 +41,7 @@
     margin-bottom: 10px;
 }
 
-/* .info-button, .enroll-button {
+.info-button, .enroll-button {
     padding: 8px 16px;
     margin-right: 10px;
     font-size: 1rem;
@@ -64,4 +64,4 @@
 
 .enroll-button:hover {
     background-color: #3d871e;
-} */
+}

@@ -8,6 +8,7 @@ type User struct {
 }
 
 type LoginResponse struct {
+	ID      string `json:"id"`
 	Email   string `json:"email"`
 	IsAdmin bool   `json:"is_admin"`
 }

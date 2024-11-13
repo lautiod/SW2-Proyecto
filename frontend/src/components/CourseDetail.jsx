@@ -5,6 +5,44 @@ import './styles/CourseDetail.css';
 const CourseDetail = () => {
     const [course, setCourse] = useState(null);
 
+    const handleEnroll = async () => {
+        try {
+            // Obtén el courseID del localStorage
+            const storedCourseID = localStorage.getItem('courseID');
+            if (!storedCourseID) {
+                console.error("courseID no encontrado en localStorage.");
+                return;
+            }
+            const storedUserID = localStorage.getItem('userID');
+            if (!storedUserID) {
+                console.error("userID no encontrado en localStorage.");
+                return;
+            }
+
+            const bodyContent = { user_id: storedUserID };
+            console.log("Enviando body:", bodyContent);  // Imprimir el objeto que se enviará
+            const response = await fetch(`http://localhost:8081/inscriptions/courses/${storedCourseID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bodyContent), // Adjust this based on how you identify the user
+                credentials: 'include'
+            });
+            
+            console.log(response)
+
+            if (response.ok) {
+                alert('Inscripción exitosa!');
+            } else {
+                alert('Error al inscribirse en el curso.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al inscribirse en el curso.');
+        }
+    };
+
     useEffect(() => {
         // Obtén el courseID del localStorage
         const storedCourseID = localStorage.getItem('courseID');
@@ -49,6 +87,7 @@ const CourseDetail = () => {
                 <p><strong>Profesor:</strong> {course.professor}</p>
                 <p><strong>Duracion:</strong> {course.duration}</p>
                 <p><strong>Requisito:</strong> {course.requirement}</p>
+                <button className="enroll-button" onClick={handleEnroll}>Inscribirse</button>
                 <Link to="/home">
                     <button className="back-button">Volver al Inicio</button>
                 </Link>

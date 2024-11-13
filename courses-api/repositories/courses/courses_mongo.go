@@ -150,7 +150,7 @@ func (repository Mongo) UpdateCourse(ctx context.Context, course coursesDAO.Cour
 	if course.Requirement != "" { // Assuming 0 is for not modification
 		update["requirement"] = course.Requirement
 	}
-	if course.Availability != 0 { // Assuming 0 is for not modification
+	if course.Availability != -1 { // Assuming 0 is for not modification
 		update["availability"] = course.Availability
 	}
 

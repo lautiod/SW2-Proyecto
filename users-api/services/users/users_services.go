@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 	dao "users-api/dao/users"
 	domain "users-api/domain/users"
@@ -284,6 +285,7 @@ func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, s
 
 	// Prepare the response
 	userDomain := domain.LoginResponse{
+		ID:      strconv.FormatInt(user.ID, 10), // Aquí se realiza la conversión
 		IsAdmin: user.IsAdmin,
 		Email:   user.Email,
 	}

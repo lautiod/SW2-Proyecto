@@ -114,16 +114,23 @@ func (controller Controller) UpdateCourse(ctx *gin.Context) {
 }
 
 func (controller Controller) EnrollUser(ctx *gin.Context) {
-	// Parse inscription
-	var inscription inscriptionsDomain.Inscription
-	if err := ctx.ShouldBindJSON(&inscription); err != nil {
+
+	var inscriptionRequest inscriptionsDomain.Inscription
+	if err := ctx.ShouldBindJSON(&inscriptionRequest); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": fmt.Sprintf("invalid request: %s", err.Error()),
 		})
 		return
 	}
 
-	// Create hotel
+	courseID := strings.TrimSpace(ctx.Param("id"))
+
+	inscription := inscriptionsDomain.Inscription{
+		CourseID: courseID,
+		UserID:   inscriptionRequest.UserID,
+	}
+
+	// Enroll User
 	id, err := controller.service.EnrollUser(ctx.Request.Context(), inscription)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

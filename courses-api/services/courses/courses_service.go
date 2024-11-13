@@ -151,12 +151,35 @@ func (service Service) EnrollUser(ctx context.Context, inscription inscriptionsD
 		return "", fmt.Errorf("error user is already enrolled in the course")
 	}
 
+	courseDAO, err := service.mainRepository.GetCourseByID(ctx, record.CourseID)
+	if err != nil {
+		return "", fmt.Errorf("error getting course from repository: %v", err)
+	}
+
+	if courseDAO.Availability < 1 {
+		return "", fmt.Errorf("error full course capacity")
+	}
+
 	id, err := service.mainRepository.EnrollUser(ctx, record)
 	if err != nil {
 		return "", fmt.Errorf("error creating course in main repository: %w", err)
 	}
+	// Update availability of course
+	courseDAO.Availability = courseDAO.Availability - 1
+
 	// Set ID from main repository to use in the rest of the repositories
 	record.ID = id
+
+	err = service.mainRepository.UpdateCourse(ctx, courseDAO)
+	if err != nil {
+		return "", fmt.Errorf("error updating availability course in main repository: %w", err)
+	}
+	if err := service.eventsQueue.Publish(coursesDomain.CourseNew{
+		Operation: "UPDATE",
+		CourseID:  courseDAO.ID,
+	}); err != nil {
+		return "", fmt.Errorf("error publishing course update: %w", err)
+	}
 
 	return id, nil
 }

@@ -5,7 +5,6 @@ import (
 	controllers "courses-api/controllers/courses"
 	repositories "courses-api/repositories/courses"
 	services "courses-api/services/courses"
-
 	"log"
 	"time"
 
@@ -57,7 +56,7 @@ func main() {
 	router.GET("/courses/:id", controller.GetCourseByID)
 	router.POST("/courses", controller.CreateCourse)
 	router.PUT("/courses/:id", controller.UpdateCourse)
-	router.POST("/inscriptions/courses", controller.EnrollUser)
+	router.POST("/inscriptions/courses/:id", controller.EnrollUser)
 	router.GET("/inscriptions/user/:id", controller.GetCoursesByUserID)
 
 	if err := router.Run(":8081"); err != nil {
