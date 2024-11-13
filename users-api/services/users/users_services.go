@@ -1,6 +1,8 @@
 package users
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"log"
@@ -9,6 +11,8 @@ import (
 	"time"
 	dao "users-api/dao/users"
 	domain "users-api/domain/users"
+
+	// repositories "users-api/repositories/users"
 
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -21,15 +25,21 @@ type Repository interface {
 	Create(user dao.User) (int64, error)
 	Update(user dao.User) error
 	Delete(id int64) error
+	//Login(body domain.Login_Request) (domain.LoginResponse, string, error)
+}
+
+type Tokenizer interface {
+	GenerateToken(username string, userID int64) (string, error)
 }
 
 type Service struct {
 	mainRepository      Repository
 	cacheRepository     Repository
 	memcachedRepository Repository
+	// tokenizer           Tokenizer
 }
 
-func NewService(mainRepository Repository, cacheRepository Repository, memcachedRepository Repository) Service {
+func NewService(mainRepository Repository, cacheRepository, memcachedRepository Repository /*, tokenizer Tokenizer*/) Service {
 	return Service{
 		mainRepository:      mainRepository,
 		cacheRepository:     cacheRepository,
@@ -225,9 +235,6 @@ func (service Service) Delete(id int64) error {
 	return nil
 }
 
-// func (service Service) Login(username string, password string) (domain.LoginResponse, error) {
-// Hash the password
-
 func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, string, error) {
 	// Try to get user from cache repository first
 	user, err := service.cacheRepository.GetByEmail(body.Email)
@@ -293,6 +300,13 @@ func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, s
 	return userDomain, tokenString, nil
 }
 
+//}
+
+func Hash(input string) string {
+	hash := md5.Sum([]byte(input))
+	return hex.EncodeToString(hash[:])
+}
+
 func (service Service) convertUser(user dao.User) domain.User {
 	return domain.User{
 		ID:       user.ID,
@@ -300,13 +314,4 @@ func (service Service) convertUser(user dao.User) domain.User {
 		Password: user.Password,
 		IsAdmin:  user.IsAdmin,
 	}
-}
-
-func Hash(input string) string {
-	hash, err := bcrypt.GenerateFromPassword([]byte(input), 10)
-	if err != nil {
-		return "" //, fmt.Errorf("error hashing password: %w", err)
-	}
-	//hash = md5.Sum([]byte(input))
-	return string(hash)
 }

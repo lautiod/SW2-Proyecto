@@ -13,6 +13,14 @@ services:
     networks:
       - app-network
 
+  memcached:
+    image: memcached:latest
+    container_name: memcached-container
+    ports:
+      - "11211:11211"
+    networks:
+      - app-network
+
   mongo:
     image: mongo:5
     container_name: mongo-container
@@ -44,14 +52,6 @@ services:
     volumes:
       - ./search-api/solr-config:/opt/solr/server/solr/courses
     command: solr-create -c courses
-    networks:
-      - app-network
-
-  memcached:
-    image: memcached:latest
-    container_name: memcached-container
-    ports:
-      - "11211:11211"
     networks:
       - app-network
 
@@ -124,9 +124,8 @@ services:
       # - inscriptions-api
     ports:
       - "5173:5173"
-    networks:
-      - app-network
 
+      
 networks:
   app-network:
     driver: bridge
