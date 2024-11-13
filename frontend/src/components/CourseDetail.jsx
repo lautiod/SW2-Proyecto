@@ -26,7 +26,7 @@ const CourseDetail = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(bodyContent), // Adjust this based on how you identify the user
+                body: JSON.stringify(bodyContent),
                 credentials: 'include'
             });
             
@@ -64,7 +64,7 @@ const CourseDetail = () => {
                 if (data && data._id) {
                     setCourse(data);
                 } else {
-                    console.error("error fetching  the course");
+                    console.error("error fetching the course");
                 }
             } catch (error) {
                 console.error('Error fetching course:', error);
@@ -85,9 +85,16 @@ const CourseDetail = () => {
                 <p><strong>Nombre:</strong> {course.name}</p>
                 <p><strong>Descripción:</strong> {course.description}</p>
                 <p><strong>Profesor:</strong> {course.professor}</p>
-                <p><strong>Duracion:</strong> {course.duration}</p>
+                <p><strong>Duración:</strong> {course.duration}</p>
                 <p><strong>Requisito:</strong> {course.requirement}</p>
-                <button className="enroll-button" onClick={handleEnroll}>Inscribirse</button>
+                
+                {/* Verifica si la disponibilidad es mayor a 0 */}
+                {course.availability > 0 ? (
+                    <button className="enroll-button" onClick={handleEnroll}>Inscribirse</button>
+                ) : (
+                    <p className="full-course-message">Curso completo</p>
+                )}
+                
                 <Link to="/home">
                     <button className="back-button">Volver al Inicio</button>
                 </Link>

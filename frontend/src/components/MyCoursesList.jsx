@@ -66,7 +66,7 @@ function MyCourses() {
                             <MyCourse key={course._id} course={course} />
                         ))
                     ) : (
-                        <div>No tienes cursos registrados.</div>
+                        <div id="sinCursos">No tienes cursos registrados.</div>
                     )
                 }
             </div>

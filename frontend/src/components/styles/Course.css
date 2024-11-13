@@ -1,57 +1,49 @@
+/* Course.css */
+
 .course-card {
-    width: 45%;
-    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #ec7e7e;
-    position: relative;  /* Agregado para permitir posicionamiento absoluto dentro de la tarjeta */
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
 }
 
-.course-content {
-    text-align: left;
-    padding: 10px;
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .course-content h2 {
     font-size: 1.5rem;
-    margin-bottom: 10px;
+    color: #333;
+    margin: 10px 0;
 }
 
-.course-content p {
-    font-size: 1rem;
-    color: #666666;
-    margin-bottom: 10px;
+.course-content img {
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 10px;
 }
 
 .info-button {
+    margin-top: 15px;
     padding: 8px 16px;
     font-size: 1rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
     cursor: pointer;
-    background-color: #1a75ff;
-    color: #ffffff;
-    text-decoration: none;
-    text-align: center;
-    position: absolute;  /* Coloca el botón en una posición absoluta dentro de .course-card */
-    bottom: 15px;  /* Aleja el botón 15px de la parte inferior de la tarjeta */
-    right: 15px;  /* Aleja el botón 15px de la parte derecha de la tarjeta */
+    transition: background-color 0.3s ease;
 }
 
 .info-button:hover {
-    background-color: #0056b3;
-}
-
-img {
-    margin-top: 5px;
-    margin-right: 10px;
-    width: 80px;           /* Ajusta el tamaño según sea necesario */
-    height: 80px;          /* Ajusta el tamaño según sea necesario */
-    border-radius: 50%;    /* Hace la imagen circular */
-    border: 2px solid #ccc; /* Agrega un borde para simular el marco */
-    overflow: hidden;      /* Asegura que los bordes de la imagen estén contenidos */
-    object-fit: cover;     /* Ajusta la imagen para cubrir completamente el marco */
-    float: left;
+    background-color: #45a049;
 }

@@ -1,42 +1,88 @@
-/* CourseList.css */
+/* MyCoursesList.css */
 
-/* Estilos generales para la lista de cursos */
-.course-list {
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    margin: 20px;
+    min-height: 100vh;
 }
 
-/* Estilos para el título y el encabezado */
-.course-list header h1 {
-    font-size: 2em;
-    margin-bottom: 10px;
-    color: #000000;
-    align-items: center;
+.course-list-container {
+    max-width: 800px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
 
-/* Estilos para el botón de volver al inicio */
 .back-button {
-    padding: 10px 20px;
-    margin: 20px 0;
-    font-size: 1em;
+    background-color: #4CAF50;
     color: white;
-    background-color: #007BFF;
+    padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
 }
 
 .back-button:hover {
-    background-color: #0056b3;
+    background-color: #45a049;
 }
 
-/* Estilos para el mensaje de no hay cursos */
-.course-list > .no-courses {
-    font-size: 1.2em;
-    color: #666;
-    margin: 20px 0;
-    text-align: center;
+header h1 {
+    font-size: 2rem;
+    color: #333;
+    margin: 0;
 }
+
+hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+}
+
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.course-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.course-item:hover {
+    transform: scale(1.03);
+}
+
+.course-item h2 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.course-item p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+#sinCursos {
+    background-color: lightblue;
+    color: black;
+    padding: 40px;
+    text-align: center;
+  } 

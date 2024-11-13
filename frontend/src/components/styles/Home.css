@@ -1,104 +1,96 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+/* Home.css */
+
 .home-container {
-    font-family: 'Barlow Condensed', sans-serif;
-    padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
 }
 
 header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 8px;
+    text-align: center;
     margin-bottom: 20px;
 }
 
 #title {
-    text-align: center;
-    font-size: 2rem;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #4CAF50;
     margin: 0;
 }
 
-/* .mycourses-button{
+#infoUser {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.admin {
+    background-color: #FFD700;
+    color: #333;
+}
+
+.alumno {
+    background-color: #ADD8E6;
+    color: #333;
+}
+
+.mycourses-button, .search-button, .createcourse-button {
+    margin: 10px;
     padding: 10px 20px;
     font-size: 1rem;
-    background-color: #1a75ff;
-    color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
-    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.mycourses-button {
+    background-color: #4CAF50;
+    color: #fff;
 }
 
 .mycourses-button:hover {
-    background-color: #0056b3;
-}
-
-.createcourse-button{
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #1a75ff;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    text-decoration: none;
-    margin-left: 920px;
-}
-
-.createcourse-button:hover {
-    background-color: #0056b3;
-}
-
-#infoUser {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-radius: 8px;
-    background-color: #1a75ff;
-    color: #fff;
-}
-
-#infoUser.admin {
-    background-color: #5bb114;
-}
-
-#infoUser p {
-    margin: 0 10px;
-} */
-
-hr {
-    border: none;
-    border-top: 1px solid #ccc;
-    margin: 20px 0;
-}
-
-.courses-section {
-    margin-bottom: 20px;
-}
-
-.courses-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    background-color: #45a049;
 }
 
 .search-button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #1a75ff;
+    background-color: #2196F3;
     color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
 }
 
 .search-button:hover {
-    background-color: #0056b3;
+    background-color: #1e88e5;
+}
+
+.createcourse-button {
+    background-color: #FF5722;
+    color: #fff;
+}
+
+.createcourse-button:hover {
+    background-color: #e64a19;
+}
+
+.courses-section {
+    text-align: center;
+}
+
+.courses-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
 }
