@@ -47,6 +47,14 @@ services:
     networks:
       - app-network
 
+  memcached:
+    image: memcached:latest
+    container_name: memcached-container
+    ports:
+      - "11211:11211"
+    networks:
+      - app-network
+
   courses-api:
     image: courses-api:latest
     container_name: courses-api-container
@@ -87,7 +95,7 @@ services:
       - "8080:8080"
     command: /bin/sh -c "sleep 10 && go run main.go"
     depends_on:
-      # - memcached
+      - memcached
       - mysql
     networks:
       - app-network
@@ -116,8 +124,9 @@ services:
       # - inscriptions-api
     ports:
       - "5173:5173"
+    networks:
+      - app-network
 
-      
 networks:
   app-network:
     driver: bridge

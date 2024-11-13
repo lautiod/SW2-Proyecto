@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"time"
 	controllers "users-api/controllers/users"
+	middleware "users-api/middleware"
 	repositories "users-api/repositories/users"
 	services "users-api/services/users"
 
@@ -22,26 +24,18 @@ func main() {
 	)
 
 	// Cache
-	// cacheRepo := repositories.NewCache(repositories.CacheConfig{
-	// 	TTL: 1 * time.Minute,
-	// })
+	cacheRepo := repositories.NewCache(repositories.CacheConfig{
+		TTL: 1 * time.Minute,
+	})
 
 	// // Memcached
-	// memcachedRepo := repositories.NewMemcached(repositories.MemcachedConfig{
-	// 	Host: "memcached",
-	// 	Port: "11211",
-	// })
+	memcachedRepo := repositories.NewMemcached(repositories.MemcachedConfig{
+		Host: "memcached",
+		Port: "11211",
+	})
 
-	// // Tokenizer
-	// jwtTokenizer := tokenizers.NewTokenizer(
-	// 	tokenizers.JWTConfig{
-	// 		Key:      "ThisIsAnExampleJWTKey!",
-	// 		Duration: 1 * time.Hour,
-	// 	},
-	// )
-
-	// // Services
-	service := services.NewService(mySQLRepo /*, cacheRepo, memcachedRepo, jwtTokenizer*/)
+	// Services
+	service := services.NewService(mySQLRepo, cacheRepo, memcachedRepo)
 
 	// Handlers
 	controller := controllers.NewController(service)
@@ -50,10 +44,10 @@ func main() {
 	router := gin.Default()
 
 	// URL mappings
-	router.GET("/users", controller.GetAll)
-	router.GET("/users/:id", controller.GetByID)
+	router.GET("/users", middleware.RequireAuth, controller.GetAll)
+	router.GET("/users/:id", middleware.RequireAuth, controller.GetByID)
 	router.POST("/users", controller.Create)
-	router.PUT("/users/:id", controller.Update)
+	router.PUT("/users/:id", middleware.RequireAuth, controller.Update)
 	router.POST("/login", controller.Login)
 
 	// Run application

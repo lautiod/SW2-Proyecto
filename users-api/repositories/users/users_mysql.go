@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"users-api/dao/users"
 	dao "users-api/dao/users"
 
 	"gorm.io/driver/mysql"
@@ -25,7 +24,7 @@ type MySQL struct {
 
 var (
 	migrate = []interface{}{
-		users.User{},
+		dao.User{},
 	}
 )
 
@@ -44,7 +43,7 @@ func NewMySQL(config MySQLConfig) MySQL {
 	}
 
 	// Automigrate structs to Gorm
-	if err := db.AutoMigrate(&users.User{}); err != nil {
+	if err := db.AutoMigrate(&dao.User{}); err != nil {
 		log.Fatalf("error automigrating structs: %s", err.Error())
 	}
 
@@ -54,16 +53,16 @@ func NewMySQL(config MySQLConfig) MySQL {
 	return MySQLInstance
 }
 
-func (repository MySQL) GetAll() ([]users.User, error) {
-	var usersList []users.User
+func (repository MySQL) GetAll() ([]dao.User, error) {
+	var usersList []dao.User
 	if err := repository.db.Find(&usersList).Error; err != nil {
 		return nil, fmt.Errorf("error fetching all users: %w", err)
 	}
 	return usersList, nil
 }
 
-func (repository MySQL) GetByID(id int64) (users.User, error) {
-	var user users.User
+func (repository MySQL) GetByID(id int64) (dao.User, error) {
+	var user dao.User
 	if err := repository.db.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return user, fmt.Errorf("user not found")
@@ -73,25 +72,25 @@ func (repository MySQL) GetByID(id int64) (users.User, error) {
 	return user, nil
 }
 
-// func (repository MySQL) GetByUsername(username string) (users.User, error) {
-// 	var user users.User
-// 	if err := repository.db.Where("username = ?", username).First(&user).Error; err != nil {
-// 		if errors.Is(err, gorm.ErrRecordNotFound) {
-// 			return user, fmt.Errorf("user not found")
-// 		}
-// 		return user, fmt.Errorf("error fetching user by username: %w", err)
-// 	}
-// 	return user, nil
-// }
+func (repository MySQL) GetByEmail(email string) (dao.User, error) {
+	var user dao.User
+	if err := repository.db.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return user, fmt.Errorf("user not found")
+		}
+		return user, fmt.Errorf("error fetching user by email: %w", err)
+	}
+	return user, nil
+}
 
-func (repository MySQL) Create(user users.User) (int64, error) {
+func (repository MySQL) Create(user dao.User) (int64, error) {
 	if err := repository.db.Create(&user).Error; err != nil {
 		return 0, fmt.Errorf("error creating user: %w", err)
 	}
 	return user.ID, nil
 }
 
-func (repository MySQL) Update(user users.User) error {
+func (repository MySQL) Update(user dao.User) error {
 	if err := repository.db.Save(&user).Error; err != nil {
 		return fmt.Errorf("error updating user: %w", err)
 	}
@@ -99,7 +98,7 @@ func (repository MySQL) Update(user users.User) error {
 }
 
 func (repository MySQL) Delete(id int64) error {
-	if err := repository.db.Delete(&users.User{}, id).Error; err != nil {
+	if err := repository.db.Delete(&dao.User{}, id).Error; err != nil {
 		return fmt.Errorf("error deleting user: %w", err)
 	}
 	return nil
