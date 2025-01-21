@@ -5,6 +5,7 @@ import (
 	"fmt"
 	coursesDAO "search-api/dao/courses"
 	coursesDomain "search-api/domain/courses"
+	"sync"
 )
 
 type Repository interface {
@@ -32,15 +33,14 @@ func NewService(repository Repository, coursesAPI ExternalRepository) Service {
 
 func (service Service) Search(ctx context.Context, query string, offset int, limit int) ([]coursesDomain.Course, error) {
 	// Call the repository's Search method
-	coursesDAOList, err := service.repository.Search(ctx, query, limit, offset)
+	allCourses, err := service.repository.Search(ctx, query, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("error searching courses: %w", err)
 	}
 
-	// Convert the dao layer courses to domain layer courses
-	coursesDomainList := make([]coursesDomain.Course, 0)
-	for _, course := range coursesDAOList {
-		coursesDomainList = append(coursesDomainList, coursesDomain.Course{
+	var courses []coursesDomain.Course
+	for _, course := range allCourses {
+		courseDomain := coursesDomain.Course{
 			ID:           course.ID,
 			Name:         course.Name,
 			Description:  course.Description,
@@ -49,10 +49,32 @@ func (service Service) Search(ctx context.Context, query string, offset int, lim
 			Requirement:  course.Requirement,
 			Duration:     course.Duration,
 			Availability: course.Availability,
-		})
+		}
+		courses = append(courses, courseDomain)
 	}
 
-	return coursesDomainList, nil
+	coursesChannel := make(chan coursesDomain.Course, len(courses))
+	var wg sync.WaitGroup
+
+	for _, course := range courses {
+		wg.Add(1)
+		go func(course coursesDomain.Course) {
+			defer wg.Done()
+			if course.Availability > 0 {
+				coursesChannel <- course
+			}
+		}(course)
+	}
+
+	wg.Wait()
+	close(coursesChannel)
+
+	var results []coursesDomain.Course
+	for course := range coursesChannel {
+		results = append(results, course)
+	}
+
+	return results, nil
 }
 
 func (service Service) HandleCourseNew(courseNew coursesDomain.CourseNew) {

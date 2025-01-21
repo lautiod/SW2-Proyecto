@@ -84,9 +84,10 @@ const CourseDetail = () => {
                 <h2>Detalles del Curso</h2>
                 <p><strong>Nombre:</strong> {course.name}</p>
                 <p><strong>Descripción:</strong> {course.description}</p>
-                <p><strong>Profesor:</strong> {course.professor}</p>
+                {/* <p><strong>Profesor:</strong> {course.professor}</p> */}
                 <p><strong>Duración:</strong> {course.duration}</p>
                 <p><strong>Requisito:</strong> {course.requirement}</p>
+                <p> <img src={course.image_url} alt="No hay foto" /> </p>
                 
                 {/* Verifica si la disponibilidad es mayor a 0 */}
                 {course.availability > 0 ? (

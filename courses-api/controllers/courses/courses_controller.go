@@ -18,7 +18,7 @@ type Service interface {
 	UpdateCourse(ctx context.Context, course coursesDomain.Course) error
 	EnrollUser(ctx context.Context, inscription inscriptionsDomain.Inscription) (string, error)
 	GetCoursesByUserID(ctx context.Context, userID string) ([]coursesDomain.Course, error)
-	GetCoursesDisponibility(ctx context.Context) ([]string, error)
+	GetCoursesDisponibility(ctx context.Context) (coursesDomain.Courses, error)
 }
 
 type Controller struct {
@@ -161,12 +161,12 @@ func (controller Controller) GetCoursesByUserID(ctx *gin.Context) {
 }
 
 func (controller Controller) GetCoursesDisponibility(ctx *gin.Context) {
-	coursesID, err := controller.service.GetCoursesDisponibility(ctx.Request.Context())
+	availablesCourses, err := controller.service.GetCoursesDisponibility(ctx.Request.Context())
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("error getting courses disponibility: %s", err.Error()),
 		})
 		return
 	}
-	ctx.JSON(http.StatusOK, coursesID)
+	ctx.JSON(http.StatusOK, availablesCourses)
 }

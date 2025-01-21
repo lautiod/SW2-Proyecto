@@ -63,3 +63,12 @@
     margin-top: 10px;
 }
 
+.course-detail img {
+    display: block; /* Asegura que la imagen se comporte como un bloque */
+    max-width: 100%; /* Limita el ancho máximo al 100% del contenedor */
+    height: auto; /* Ajusta automáticamente la altura para mantener la proporción */
+    border-radius: 8px; /* Opcional: Agrega bordes redondeados para que coincidan con la tarjeta */
+    margin: 0 auto; /* Centra la imagen dentro del contenedor */
+    object-fit: cover; /* Asegura que la imagen se recorte y no se distorsione */
+}
+

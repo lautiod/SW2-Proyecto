@@ -176,10 +176,7 @@ func (searchEngine Solr) Search(ctx context.Context, query string, limit int, of
 			Availability: getFloatField(doc, "availability"),
 		}
 
-		// Only add the course to the list if availability > 0
-		if course.Availability > 0 {
-			coursesList = append(coursesList, course)
-		}
+		coursesList = append(coursesList, course)
 	}
 
 	return coursesList, nil

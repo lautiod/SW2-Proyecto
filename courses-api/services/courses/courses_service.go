@@ -138,35 +138,50 @@ func (service Service) UpdateCourse(ctx context.Context, course coursesDomain.Co
 	return nil
 }
 
-func (service Service) GetCoursesDisponibility(ctx context.Context) ([]string, error) {
+func (service Service) GetCoursesDisponibility(ctx context.Context) (coursesDomain.Courses, error) {
 	// Obtener todos los cursos
 	allCourses, err := service.mainRepository.GetCourses(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error getting courses from repository: %v", err)
 	}
 
-	coursesChannel := make(chan string, len(allCourses))
-
-	var wg sync.WaitGroup
+	var courses coursesDomain.Courses
 	for _, course := range allCourses {
+		courseDomain := coursesDomain.Course{
+			ID:           course.ID,
+			Name:         course.Name,
+			Description:  course.Description,
+			Professor:    course.Professor,
+			ImageURL:     course.ImageURL,
+			Requirement:  course.Requirement,
+			Duration:     course.Duration,
+			Availability: course.Availability,
+		}
+		courses = append(courses, courseDomain)
+	}
+
+	coursesChannel := make(chan coursesDomain.Course, len(courses))
+	var wg sync.WaitGroup
+
+	for _, course := range courses {
 		wg.Add(1)
-		go func(course coursesDAO.Course) {
+		go func(course coursesDomain.Course) {
 			defer wg.Done()
 			if course.Availability > 0 {
-				coursesChannel <- course.ID // Enviar el curso al canal
+				coursesChannel <- course
 			}
 		}(course)
 	}
-	wg.Wait()
 
+	wg.Wait()
 	close(coursesChannel)
 
-	var courses []string
+	var results coursesDomain.Courses
 	for course := range coursesChannel {
-		courses = append(courses, course)
+		results = append(results, course)
 	}
 
-	return courses, nil
+	return results, nil
 }
 
 // ******************************** I N S C R I P T I O N S

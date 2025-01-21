@@ -5,7 +5,7 @@ import './styles/SignUp.css';
 const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [is_admin, setIsAdmin] = useState(false);
     const [redirect, setRedirect] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -13,7 +13,7 @@ const Signup = () => {
         const newUser = {
             email: email,
             password: password,
-            isAdmin: isAdmin
+            is_admin: is_admin
         };
         console.log(newUser)
         try {
@@ -65,7 +65,7 @@ const Signup = () => {
                     <input
                         type="radio"
                         id="alumno"
-                        checked={!isAdmin}
+                        checked={!is_admin}
                         onChange={() => setIsAdmin(false)}
                         required
                     />
@@ -73,7 +73,7 @@ const Signup = () => {
                     <input
                         type="radio"
                         id="admin"
-                        checked={isAdmin}
+                        checked={is_admin}
                         onChange={() => setIsAdmin(true)}
                         required
                     />
