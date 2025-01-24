@@ -40,7 +40,7 @@ const Home = () => {
                 <Link to='/courses/search'>
                     <button className="search-button">Buscar Cursos</button>
                 </Link> 
-                {/* {isAdmin ? <Link to='/create'> <button className='createcourse-button'>Crear Curso</button> </Link> : <p></p>} */}
+                {isAdmin ? <Link to='/create'> <button className='createcourse-button'>Crear Curso</button> </Link> : <p></p>}
                 
             </div>
             <hr />

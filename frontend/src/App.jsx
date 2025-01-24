@@ -5,10 +5,10 @@ import Login from './components/Login'
 import CourseSearch from './components/CourseSearch';
 // import AddComment from './components/AddComment'
 import MyCoursesList from './components/MyCoursesList'
-// import AddCourse from './components/AddCourse'
+import AddCourse from './components/AddCourse'
+import UpdateCourse from './components/UpdateCourse'
 import Home from './components/Home';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
 
 const App = () => {
     return (
@@ -22,7 +22,8 @@ const App = () => {
                 <Route path="/courses/search" element={<CourseSearch />} />
                 {/* <Route path="/comment" element={<AddComment />} /> */}
                 <Route path="/mycourses" element={<MyCoursesList />} />
-                {/* <Route path="/create" element={<AddCourse/>} /> */}
+                <Route path="/create" element={<AddCourse/>} />
+                <Route path="/update/:id" element={<UpdateCourse/>} />
             </Routes> 
         </BrowserRouter>
     );

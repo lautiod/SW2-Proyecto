@@ -24,7 +24,7 @@ const Login = () => {
             if (response.ok) {
                 localStorage.setItem('email', email);
                 localStorage.setItem('userID', data.id);
-                localStorage.setItem('isAdmin', data.isadmin ? 'admin' : 'alumno');
+                localStorage.setItem('isAdmin', data.is_admin ? 'admin' : 'alumno');
                 alert('Login exitoso');
                 setRedirect(true);
             } else {
