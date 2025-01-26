@@ -5,17 +5,21 @@ import (
 	coursesDomain "courses-api/domain/courses"
 	inscriptionsDomain "courses-api/domain/inscriptions"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
+	"os"
+
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 type Service interface {
 	GetCourses(ctx context.Context) (coursesDomain.Courses, error)
 	GetCourseByID(ctx context.Context, id string) (coursesDomain.Course, error)
-	CreateCourse(ctx context.Context, course coursesDomain.Course) (string, error)
-	UpdateCourse(ctx context.Context, course coursesDomain.Course) error
+	CreateCourse(ctx context.Context, course coursesDomain.Course, userID string) (string, error)
+	UpdateCourse(ctx context.Context, course coursesDomain.Course, userID string) error
 	EnrollUser(ctx context.Context, inscription inscriptionsDomain.Inscription) (string, error)
 	GetCoursesByUserID(ctx context.Context, userID string) ([]coursesDomain.Course, error)
 	GetCoursesDisponibility(ctx context.Context) (coursesDomain.Courses, error)
@@ -60,7 +64,26 @@ func (controller Controller) GetCourseByID(ctx *gin.Context) {
 }
 
 func (controller Controller) CreateCourse(ctx *gin.Context) {
-	// Parse course
+	// Obtener el token de la cookie
+	tokenString, err := ctx.Cookie("Authorization")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "no authorization cookie found",
+		})
+		return
+	}
+
+	// Extraer el userID del token
+	userID, err := extractUserIDFromToken(tokenString)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid token",
+		})
+		return
+	}
+
+	log.Printf("Token extracted userID: %s", userID) // Log para debug
+
 	var course coursesDomain.Course
 	if err := ctx.ShouldBindJSON(&course); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -69,26 +92,66 @@ func (controller Controller) CreateCourse(ctx *gin.Context) {
 		return
 	}
 
-	// Create hotel
-	id, err := controller.service.CreateCourse(ctx.Request.Context(), course)
+	id, err := controller.service.CreateCourse(ctx.Request.Context(), course, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
+		statusCode := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "unauthorized") {
+			statusCode = http.StatusUnauthorized
+		}
+		ctx.JSON(statusCode, gin.H{
 			"error": fmt.Sprintf("error creating course: %s", err.Error()),
 		})
 		return
 	}
 
-	// Send ID
 	ctx.JSON(http.StatusCreated, gin.H{
 		"id": id,
 	})
 }
 
-func (controller Controller) UpdateCourse(ctx *gin.Context) {
-	// Validate ID param
-	id := strings.TrimSpace(ctx.Param("id"))
+func extractUserIDFromToken(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("SECRET")), nil
+	})
 
-	// Parse hotel
+	if err != nil {
+		return "", fmt.Errorf("error parsing token: %w", err)
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if sub, ok := claims["sub"].(float64); ok {
+			return fmt.Sprintf("%d", int64(sub)), nil
+		}
+	}
+
+	return "", fmt.Errorf("invalid token claims")
+}
+
+func (controller Controller) UpdateCourse(ctx *gin.Context) {
+	// Obtener el token de la cookie
+	tokenString, err := ctx.Cookie("Authorization")
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "no authorization cookie found",
+		})
+		return
+	}
+
+	// Extraer el userID del token
+	userID, err := extractUserIDFromToken(tokenString)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid token",
+		})
+		return
+	}
+
+	log.Printf("Token extracted userID: %s", userID) // Log para debug
+
+	id := strings.TrimSpace(ctx.Param("id"))
 	var course coursesDomain.Course
 	if err := ctx.ShouldBindJSON(&course); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -97,18 +160,18 @@ func (controller Controller) UpdateCourse(ctx *gin.Context) {
 		return
 	}
 
-	// Set the ID from the URL to the hotel object
 	course.ID = id
-
-	// Update hotel
-	if err := controller.service.UpdateCourse(ctx.Request.Context(), course); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
+	if err := controller.service.UpdateCourse(ctx.Request.Context(), course, userID); err != nil {
+		statusCode := http.StatusInternalServerError
+		if strings.Contains(err.Error(), "unauthorized") {
+			statusCode = http.StatusUnauthorized
+		}
+		ctx.JSON(statusCode, gin.H{
 			"error": fmt.Sprintf("error updating course: %s", err.Error()),
 		})
 		return
 	}
 
-	// Send response
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": id,
 	})

@@ -6,7 +6,9 @@ import (
 	inscriptionsDAO "courses-api/dao/inscriptions"
 	coursesDomain "courses-api/domain/courses"
 	inscriptionsDomain "courses-api/domain/inscriptions"
+	"courses-api/domain/users"
 	"fmt"
+	"log"
 	"sync"
 )
 
@@ -27,12 +29,18 @@ type Queue interface {
 type Service struct {
 	mainRepository Repository
 	eventsQueue    Queue
+	usersRepo      users.ExternalRepository
 }
 
-func NewService(mainRepository Repository, eventsQueue Queue) Service {
+func NewService(
+	mainRepository Repository,
+	eventsQueue Queue,
+	usersRepo users.ExternalRepository,
+) Service {
 	return Service{
 		mainRepository: mainRepository,
 		eventsQueue:    eventsQueue,
+		usersRepo:      usersRepo,
 	}
 }
 
@@ -80,7 +88,21 @@ func (service Service) GetCourseByID(ctx context.Context, id string) (coursesDom
 	}, nil
 }
 
-func (service Service) CreateCourse(ctx context.Context, course coursesDomain.Course) (string, error) {
+func (service Service) CreateCourse(ctx context.Context, course coursesDomain.Course, userID string) (string, error) {
+	log.Printf("Service - CreateCourse - Starting validation for userID: %s\n", userID)
+
+	isAdmin, err := service.usersRepo.ValidateAdminUser(ctx, userID)
+	if err != nil {
+		log.Printf("Service - CreateCourse - Error validating admin user: %v\n", err)
+		return "", fmt.Errorf("error validating user permissions: %w", err)
+	}
+
+	log.Printf("Service - CreateCourse - User isAdmin: %v\n", isAdmin)
+	if !isAdmin {
+		log.Println("Service - CreateCourse - User is not an admin")
+		return "", fmt.Errorf("unauthorized: user is not an admin")
+	}
+
 	// Convert domain model to DAO model
 	record := coursesDAO.Course{
 		Name:         course.Name,
@@ -91,24 +113,42 @@ func (service Service) CreateCourse(ctx context.Context, course coursesDomain.Co
 		Duration:     course.Duration,
 		Availability: course.Availability,
 	}
+
+	log.Printf("Service - CreateCourse - Attempting to create course: %+v\n", record)
 	id, err := service.mainRepository.CreateCourse(ctx, record)
 	if err != nil {
+		log.Printf("Service - CreateCourse - Error creating course in repository: %v\n", err)
 		return "", fmt.Errorf("error creating course in main repository: %w", err)
 	}
+	log.Printf("Service - CreateCourse - Course created with ID: %s\n", id)
+
 	// Set ID from main repository to use in the rest of the repositories
 	record.ID = id
 
+	log.Println("Service - CreateCourse - Publishing event to queue")
 	if err := service.eventsQueue.Publish(coursesDomain.CourseNew{
 		Operation: "CREATE",
 		CourseID:  id,
 	}); err != nil {
+		log.Printf("Service - CreateCourse - Error publishing to queue: %v\n", err)
 		return "", fmt.Errorf("error publishing course new: %w", err)
 	}
 
+	log.Printf("Service - CreateCourse - Successfully completed for ID: %s\n", id)
 	return id, nil
 }
 
-func (service Service) UpdateCourse(ctx context.Context, course coursesDomain.Course) error {
+func (service Service) UpdateCourse(ctx context.Context, course coursesDomain.Course, userID string) error {
+	// Validar si el usuario es administrador
+	isAdmin, err := service.usersRepo.ValidateAdminUser(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("error validating user permissions: %w", err)
+	}
+
+	if !isAdmin {
+		return fmt.Errorf("unauthorized: user is not an admin")
+	}
+
 	// Convert domain model to DAO model
 	record := coursesDAO.Course{
 		ID:           course.ID,
@@ -122,7 +162,7 @@ func (service Service) UpdateCourse(ctx context.Context, course coursesDomain.Co
 	}
 
 	// Update the hotel in the main repository
-	err := service.mainRepository.UpdateCourse(ctx, record)
+	err = service.mainRepository.UpdateCourse(ctx, record)
 	if err != nil {
 		return fmt.Errorf("error updating course in main repository: %w", err)
 	}
@@ -263,4 +303,31 @@ func (service Service) GetCoursesByUserID(ctx context.Context, userID string) ([
 	}
 
 	return coursesList, nil
+}
+
+// CourseWithProfessor representa un curso con los detalles completos del profesor
+type CourseWithProfessor struct {
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	Description string     `json:"description"`
+	Professor   users.User `json:"professor"`
+}
+
+func (s *Service) GetCourseWithProfessor(ctx context.Context, courseID string) (CourseWithProfessor, error) {
+	course, err := s.mainRepository.GetCourseByID(ctx, courseID)
+	if err != nil {
+		return CourseWithProfessor{}, fmt.Errorf("error getting course: %w", err)
+	}
+
+	professor, err := s.usersRepo.GetUserByID(ctx, course.Professor)
+	if err != nil {
+		return CourseWithProfessor{}, fmt.Errorf("error getting professor: %w", err)
+	}
+
+	return CourseWithProfessor{
+		ID:          course.ID,
+		Name:        course.Name,
+		Description: course.Description,
+		Professor:   professor,
+	}, nil
 }

@@ -4,6 +4,7 @@ import (
 	"courses-api/clients/queues"
 	controllers "courses-api/controllers/courses"
 	repositories "courses-api/repositories/courses"
+	usersRepo "courses-api/repositories/users"
 	services "courses-api/services/courses"
 	"log"
 	"time"
@@ -13,6 +14,8 @@ import (
 )
 
 func main() {
+	// Configurar el logging
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// MongoDB
 	mainRepository := repositories.NewMongo(repositories.MongoConfig{
@@ -34,8 +37,15 @@ func main() {
 		QueueName: "courses-news",
 	})
 
+	// Nuevo: Configuración del cliente HTTP para users
+	usersRepository := usersRepo.NewHTTP(usersRepo.HTTPConfig{
+		Host:    "users-api", // Correcto para Docker
+		Port:    "8080",      // Cambiado a 8080
+		Timeout: 10,
+	})
+
 	// Services
-	service := services.NewService(mainRepository, eventsQueue)
+	service := services.NewService(mainRepository, eventsQueue, usersRepository)
 	// Controllers
 	controller := controllers.NewController(service)
 
