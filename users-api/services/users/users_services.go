@@ -182,13 +182,13 @@ func (service Service) Update(user domain.User) error {
 	// Hash the password if provided
 	var passwordHash string
 	if user.Password != "" {
-		passwordHash = Hash(user.Password) //Se hashea la nueva contra
+		passwordHash = Hash(user.Password)
 	} else {
 		existingUser, err := service.mainRepository.GetByID(user.ID)
 		if err != nil {
 			return fmt.Errorf("error retrieving existing user: %w", err)
 		}
-		passwordHash = existingUser.Password //En el caso que no haya contra nueva se sigue usando la vieja
+		passwordHash = existingUser.Password
 	}
 
 	// Update in main repository
@@ -196,6 +196,7 @@ func (service Service) Update(user domain.User) error {
 		ID:       user.ID,
 		Email:    user.Email,
 		Password: passwordHash,
+		IsAdmin:  user.IsAdmin,
 	})
 	if err != nil {
 		return fmt.Errorf("error updating user: %w", err)
@@ -206,6 +207,7 @@ func (service Service) Update(user domain.User) error {
 		ID:       user.ID,
 		Email:    user.Email,
 		Password: passwordHash,
+		IsAdmin:  user.IsAdmin,
 	}
 	if err := service.cacheRepository.Update(updatedUser); err != nil {
 		return fmt.Errorf("error updating user in cache: %w", err)
