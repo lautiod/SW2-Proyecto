@@ -19,7 +19,7 @@ type Service interface {
 	Update(user domain.User) error
 	Delete(id int64) error
 	Login(body domain.Login_Request) (domain.LoginResponse, string, error)
-	GetServices(ctx context.Context) (domain_docker.ServicesResponse, error)
+	GetContainers(ctx context.Context) ([]domain_docker.Service, error)
 }
 
 type Controller struct {
@@ -201,7 +201,7 @@ func (controller Controller) GetServices(c *gin.Context) {
 		return
 	}
 
-	services, err := controller.service.GetServices(c.Request.Context())
+	services, err := controller.service.GetContainers(c.Request.Context())
 	if err != nil {
 		// Devolver una respuesta con el error
 		c.JSON(http.StatusInternalServerError, gin.H{

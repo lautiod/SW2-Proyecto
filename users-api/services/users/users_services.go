@@ -306,8 +306,6 @@ func (service Service) Login(body domain.Login_Request) (domain.LoginResponse, s
 	return userDomain, tokenString, nil
 }
 
-//}
-
 func Hash(input string) string {
 	hash := md5.Sum([]byte(input))
 	return hex.EncodeToString(hash[:])
@@ -322,11 +320,11 @@ func (service Service) convertUser(user dao.User) domain.User {
 	}
 }
 
-func (service Service) GetServices(ctx context.Context) (domain_docker.ServicesResponse, error) {
+func (service Service) GetContainers(ctx context.Context) ([]domain_docker.Service, error) {
 	containers, err := dockerClient.GetContainers(ctx)
 	if err != nil {
 		fmt.Println("error getting containers:", err)
-		return domain_docker.ServicesResponse{}, err
+		return nil, err
 	}
 
 	containerDomainList := make([]domain_docker.Service, 0, len(containers))
@@ -342,8 +340,8 @@ func (service Service) GetServices(ctx context.Context) (domain_docker.ServicesR
 			for serviceName := range expectedServices {
 				if strings.Contains(name, serviceName) && container.State == "running" {
 					containerDomainList = append(containerDomainList, domain_docker.Service{
-						Name:       []string{serviceName},
-						Containers: []string{container.ID},
+						Name:       serviceName,
+						Containers: container.ID,
 					})
 					break
 				}
@@ -351,7 +349,5 @@ func (service Service) GetServices(ctx context.Context) (domain_docker.ServicesR
 		}
 	}
 
-	return domain_docker.ServicesResponse{
-		Services: containerDomainList,
-	}, nil
+	return containerDomainList, nil
 }
