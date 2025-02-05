@@ -65,7 +65,7 @@ func RequireAuth(c *gin.Context) {
 		// Configurar el contexto con datos del usuario
 		c.Set("user", user)
 		c.Set("userID", user.ID)
-		//c.Set("isAdmin", user.IsAdmin)
+		c.Set("isAdmin", user.IsAdmin)
 
 		c.Next()
 

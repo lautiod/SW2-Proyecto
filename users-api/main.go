@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 	controllers "users-api/controllers/users"
+	"users-api/middleware"
 	repositories "users-api/repositories/users"
 	services "users-api/services/users"
 
@@ -66,7 +67,7 @@ func main() {
 	router.POST("/users", controller.Create)
 	router.PUT("/users/:id", controller.Update)
 	router.POST("/login", controller.Login)
-	router.GET("/users/admin", controller.GetServices)
+	router.GET("/users/admin", middleware.RequireAuth, controller.GetServices)
 	// Run application
 	if err := router.Run(":8080"); err != nil {
 		log.Panicf("Error running application: %v", err)

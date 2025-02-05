@@ -184,6 +184,23 @@ func (controller Controller) Login(c *gin.Context) {
 // ObtenerContenedoresActivos maneja la solicitud HTTP y responde con los contenedores activos.
 func (controller Controller) GetServices(c *gin.Context) {
 
+	val, exists := c.Get("isAdmin")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "User not found",
+		})
+		return
+	}
+
+	admin := val.(bool)
+
+	if !admin {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "user is not admin",
+		})
+		return
+	}
+
 	services, err := controller.service.GetServices(c.Request.Context())
 	if err != nil {
 		// Devolver una respuesta con el error
