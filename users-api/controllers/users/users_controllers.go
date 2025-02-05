@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	domain_docker "users-api/domain/docker"
 	domain "users-api/domain/users"
+
+	"golang.org/x/net/context"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +19,7 @@ type Service interface {
 	Update(user domain.User) error
 	Delete(id int64) error
 	Login(body domain.Login_Request) (domain.LoginResponse, string, error)
+	GetServices(ctx context.Context) (domain_docker.ServicesResponse, error)
 }
 
 type Controller struct {
@@ -175,4 +179,20 @@ func (controller Controller) Login(c *gin.Context) {
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 	c.JSON(http.StatusOK, response)
+}
+
+// ObtenerContenedoresActivos maneja la solicitud HTTP y responde con los contenedores activos.
+func (controller Controller) GetServices(c *gin.Context) {
+
+	services, err := controller.service.GetServices(c.Request.Context())
+	if err != nil {
+		// Devolver una respuesta con el error
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Devolver los servicios en caso de éxito
+	c.JSON(http.StatusOK, services)
 }

@@ -8,14 +8,16 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
+	"users-api/clients/docker"
 	dao "users-api/dao/users"
+	domain_docker "users-api/domain/docker"
 	domain "users-api/domain/users"
-
-	// repositories "users-api/repositories/users"
 
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 )
 
 type Repository interface {
@@ -38,6 +40,8 @@ type Service struct {
 	memcachedRepository Repository
 	// tokenizer           Tokenizer
 }
+
+var dockerClient = docker.NewDockerClient()
 
 func NewService(mainRepository Repository, cacheRepository, memcachedRepository Repository /*, tokenizer Tokenizer*/) Service {
 	return Service{
@@ -316,4 +320,38 @@ func (service Service) convertUser(user dao.User) domain.User {
 		Password: user.Password,
 		IsAdmin:  user.IsAdmin,
 	}
+}
+
+func (service Service) GetServices(ctx context.Context) (domain_docker.ServicesResponse, error) {
+	containers, err := dockerClient.GetContainers(ctx)
+	if err != nil {
+		fmt.Println("error getting containers:", err)
+		return domain_docker.ServicesResponse{}, err
+	}
+
+	containerDomainList := make([]domain_docker.Service, 0, len(containers))
+
+	expectedServices := map[string]bool{
+		"search-api":  true,
+		"courses-api": true,
+		"users-api":   true,
+	}
+
+	for _, container := range containers {
+		for _, name := range container.Names {
+			for serviceName := range expectedServices {
+				if strings.Contains(name, serviceName) && container.State == "running" {
+					containerDomainList = append(containerDomainList, domain_docker.Service{
+						Name:       []string{serviceName},
+						Containers: []string{container.ID},
+					})
+					break
+				}
+			}
+		}
+	}
+
+	return domain_docker.ServicesResponse{
+		Services: containerDomainList,
+	}, nil
 }

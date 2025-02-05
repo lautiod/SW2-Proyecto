@@ -66,7 +66,7 @@ func main() {
 	router.POST("/users", controller.Create)
 	router.PUT("/users/:id", controller.Update)
 	router.POST("/login", controller.Login)
-
+	router.GET("/users/admin", controller.GetServices)
 	// Run application
 	if err := router.Run(":8080"); err != nil {
 		log.Panicf("Error running application: %v", err)

@@ -87,6 +87,8 @@ services:
 
   users-api:
     image: users-api:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     container_name: users-api-container
     build:
       context: ./users-api
