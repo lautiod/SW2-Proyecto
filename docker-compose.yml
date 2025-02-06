@@ -55,6 +55,19 @@ services:
     networks:
       - app-network
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./search-api/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - search-api1
+      - search-api2
+    networks:
+      - app-network
+
   courses-api:
     image: courses-api:latest
     container_name: courses-api-container
@@ -70,14 +83,32 @@ services:
     networks:
       - app-network
   
-  search-api:
+  search-api1:
     image: search-api:latest
-    container_name: search-api-container
+    container_name: search-api1-container
     build:
       context: ./search-api
       dockerfile: Dockerfile
+    # Puedes omitir el mapeo de puertos si solo se usará internamente.
+    # Si necesitas exponerlo al host, mapea el puerto del contenedor a uno disponible:
     ports:
       - "8082:8082"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - rabbitmq
+      - solr
+    networks:
+      - app-network
+
+  search-api2:
+    image: search-api:latest
+    container_name: search-api2-container
+    build:
+      context: ./search-api
+      dockerfile: Dockerfile
+    # Si necesitas exponerlo, usa otro puerto en el host:
+    ports:
+      - "8083:8082"  # Aquí el contenedor sigue escuchando en el 8082, pero se mapea al 8083 en el host.
     command: /bin/sh -c "sleep 30 && go run main.go"
     depends_on:
       - rabbitmq
@@ -122,7 +153,8 @@ services:
     build: ./frontend
     depends_on:
       - courses-api
-      - search-api 
+      - search-api1
+      - search-api2 
       # - inscriptions-api
     ports:
       - "5173:5173"

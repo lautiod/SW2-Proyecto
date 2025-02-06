@@ -32,7 +32,7 @@ func (controller Controller) Search(c *gin.Context) {
 	offset, err := strconv.Atoi(c.Query("offset"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": fmt.Sprintf("invalid request: %s", err),
+			"errRRor": fmt.Sprintf("invalid request: %s", err),
 		})
 		return
 	}
@@ -41,10 +41,13 @@ func (controller Controller) Search(c *gin.Context) {
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": fmt.Sprintf("invalid request: %s", err),
+			"erRror": fmt.Sprintf("invalid request: %s", err),
 		})
 		return
 	}
+
+	fmt.Printf("URI recibida: %s\n", c.Request.RequestURI)
+	fmt.Printf("offset: %s, limit: %s , query: %s\n", c.Query("offset"), c.Query("limit"), c.Query("q"))
 
 	// Invoke service
 	courses, err := controller.service.Search(c.Request.Context(), query, offset, limit)

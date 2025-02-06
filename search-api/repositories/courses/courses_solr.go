@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"search-api/dao/courses"
 
 	"github.com/stevenferrer/solr-go"
@@ -178,7 +179,7 @@ func (searchEngine Solr) Search(ctx context.Context, query string, limit int, of
 
 		coursesList = append(coursesList, course)
 	}
-
+	log.Printf("Resultados obtenidos: %v", coursesList)
 	return coursesList, nil
 }
 

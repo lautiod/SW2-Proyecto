@@ -20,7 +20,7 @@ const CourseSearch = () => {
         const query = searchQuery.trim() === '' ? 'Curso' : searchQuery;
 
         try {
-            const response = await fetch(`http://localhost:8082/search?q=${query}&limit=10&offset=0`, {
+            const response = await fetch(`http://localhost:8085/search?q=${query}&limit=10&offset=0`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ const CourseSearch = () => {
                 />
                 <button type="submit" className="search-button">Buscar</button>
             </form>
-            <p id="Disponibilidad"> Cursos con Disponibilidad: </p>
+            <p className="Disponibilidad"> Cursos con Disponibilidad: </p>
             <hr />
             {error && <p className="error-message">{error}</p>}
             {(!coursesResult || coursesResult.length === 0) && searchOnce && !error && (

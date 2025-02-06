@@ -2,7 +2,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #afe2e9;
     margin: 0;
     padding: 0;
 }
@@ -86,6 +86,10 @@ h1 {
     margin: 0 auto;
 }
 
-#disponibilidad{
-    color: #4CAF50;
+.disponibilidad {
+    text-align: left;
+    color: #333;
+    font-size: 2rem;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
