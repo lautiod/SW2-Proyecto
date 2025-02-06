@@ -41,7 +41,7 @@ const Home = () => {
                     <button className="search-button">Buscar Cursos</button>
                 </Link> 
                 {isAdmin ? <Link to='/create'> <button className='createcourse-button'>Crear Curso</button> </Link> : <p></p>}
-                
+                {isAdmin ? <Link to='/containers'> <button className='createcourse-button'>Admin</button> </Link> : <p></p>}
             </div>
             <hr />
             <CourseList />

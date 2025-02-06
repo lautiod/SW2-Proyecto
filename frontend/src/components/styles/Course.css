@@ -63,3 +63,12 @@
 .createcourse-button:hover {
     background-color: #18a991;
 }
+
+.container-id {
+    display: inline-block;     /* o block, dependiendo del contexto */
+    max-width: 150px;          /* ajusta el ancho máximo según necesites */
+    white-space: nowrap;       /* evita que el texto se rompa en varias líneas */
+    overflow: hidden;          /* oculta el contenido que se desborda */
+    text-overflow: ellipsis;   /* muestra "..." al final del texto truncado */
+  }
+  

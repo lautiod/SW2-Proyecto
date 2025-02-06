@@ -8,6 +8,7 @@ import MyCoursesList from './components/MyCoursesList'
 import AddCourse from './components/AddCourse'
 import UpdateCourse from './components/UpdateCourse'
 import Home from './components/Home';
+import ContainerList from './components/ContainerList'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
                 {/* <Route path="/comment" element={<AddComment />} /> */}
                 <Route path="/mycourses" element={<MyCoursesList />} />
                 <Route path="/create" element={<AddCourse/>} />
+                <Route path="/containers" element={<ContainerList/>} />
                 <Route path="/update/:id" element={<UpdateCourse/>} />
             </Routes> 
         </BrowserRouter>

@@ -340,8 +340,8 @@ func (service Service) GetContainers(ctx context.Context) ([]domain_docker.Servi
 			for serviceName := range expectedServices {
 				if strings.Contains(name, serviceName) && container.State == "running" {
 					containerDomainList = append(containerDomainList, domain_docker.Service{
-						Name:       serviceName,
-						Containers: container.ID,
+						Name:        serviceName,
+						ContainerID: container.ID,
 					})
 					break
 				}
