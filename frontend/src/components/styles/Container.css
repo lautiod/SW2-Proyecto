@@ -1,0 +1,37 @@
+/* Tarjeta del contenedor */
+.course-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 280px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Efecto hover para resaltar la tarjeta */
+  .course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  /* Contenido interno de la tarjeta */
+  .course-content {
+    padding: 15px;
+    text-align: center;
+  }
+  
+  /* Título del contenedor */
+  .course-content h2 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0;
+  }
+  
+  /* Estilo para el id del contenedor */
+  .container-id {
+    display: block;
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 5px;
+  }
+  

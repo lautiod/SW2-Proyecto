@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import Container from "./Container.jsx";
-import './styles/CourseList.css';
+import './styles/ContainerList.css';
 
 function ContainerList() {
     const [containers, setContainers] = useState([]);
