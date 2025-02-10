@@ -1,4 +1,4 @@
-package users
+package users_test
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ var (
 
 type Mock struct{}
 
-func NewMock() Repository {
+func NewMock() *Mock {
 	return &Mock{}
 }
 

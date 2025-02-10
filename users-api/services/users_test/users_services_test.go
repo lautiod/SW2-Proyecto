@@ -3,6 +3,7 @@ package users_test
 import (
 	"testing"
 	domain "users-api/domain/users"
+	repositories "users-api/repositories/users_test"
 	"users-api/services/users"
 
 	"github.com/stretchr/testify/assert"
@@ -10,9 +11,9 @@ import (
 
 func TestUserService(t *testing.T) {
 	// Inicializar los mocks y el servicio para cada test
-	mainRepo := users.NewMock()
-	cacheRepo := users.NewMock()
-	memcachedRepo := users.NewMock()
+	mainRepo := repositories.NewMock()
+	cacheRepo := repositories.NewMock()
+	memcachedRepo := repositories.NewMock()
 	userService := users.NewService(mainRepo, cacheRepo, memcachedRepo)
 
 	t.Run("Create User", func(t *testing.T) {
